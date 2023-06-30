@@ -1,0 +1,71 @@
+<mvc:View
+	controllerName="zjblessons.ControlTaskEmelianov.controller.Object"
+	xmlns="sap.m"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:semantic="sap.f.semantic">
+
+	<semantic:SemanticPage
+		id="page"
+		headerPinnable="false"
+		toggleHeaderOnTitleClick="false"
+		busy="{objectView>/busy}"
+		busyIndicatorDelay="{objectView>/delay}">
+
+		<semantic:titleHeading>
+			<Title text="{MaterialText}" />
+		</semantic:titleHeading>
+
+		<semantic:headerContent>
+			<ObjectNumber
+				number="{
+					path: 'Rating',
+					formatter: '.formatter.numberUnit'
+				}"
+			/>
+		</semantic:headerContent>
+
+		<semantic:titleCustomTextActions>
+			<Button
+				visible="{objectView>/editMode}"
+			 	press="onPressSaveMaterial"
+				icon="{i18n>iSave}"
+				text="{i18n>btnSave}"/>
+			<Button
+				visible="{objectView>/editMode}"
+			 	press="onPressCancelEditMaterial"
+				icon="{i18n>iCancel}"
+				text="{i18n>btnCancel}"/>
+			<Button
+				visible="{= !${objectView>/editMode}}"
+			 	press="onPressEditMaterial"
+				icon="{i18n>iEdit}"
+				text="{i18n>btnEdit}"/>
+		</semantic:titleCustomTextActions>
+
+		<semantic:content>
+			<IconTabBar
+				id="iconTabBar" 
+				headerMode="Inline" 
+				select="onSelectIconTabBar">
+				<items>
+					<IconTabFilter
+						text="Panels"
+						key="panels"
+						icon="{i18n>iObjectList}">
+					</IconTabFilter>
+					<IconTabFilter
+						id="formIconTabFilter"
+						text="Form"
+						key="form"
+						icon="sap-icon://form"
+						enabled="{= !${objectView>/editMode} || ${objectView>/selectedKeyITB} === 'form'}">
+						
+					</IconTabFilter>
+				</items>
+			</IconTabBar>
+		</semantic:content>		
+
+
+	</semantic:SemanticPage>
+
+</mvc:View>
