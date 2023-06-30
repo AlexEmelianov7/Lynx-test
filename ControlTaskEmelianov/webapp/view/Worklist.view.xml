@@ -1,4 +1,4 @@
-<mvc:View
+<!-- <mvc:View
 	controllerName="zjblessons.ControlTaskEmelianov.controller.Worklist"
 	xmlns="sap.m"
 	xmlns:mvc="sap.ui.core.mvc"
@@ -77,4 +77,117 @@
 
 	</semantic:SemanticPage>
 
+</mvc:View> -->
+
+<mvc:View
+	controllerName="zjblessons.ControlTaskEmelianov.controller.Worklist"
+	xmlns="sap.ui.table"
+	xmlns:mvc="sap.ui.core.mvc"
+	xmlns:u="sap.ui.unified"
+	xmlns:c="sap.ui.core"
+	xmlns:m="sap.m"
+    height="100%">
+	<m:Page
+		id="page"
+		showHeader="false"
+		enableScrolling="false"
+		class="sapUiContentPadding">
+		<m:content>
+			<Table
+				id="table"
+				rows="{/zjblessons_base_Materials}"
+				selectionMode="MultiToggle"
+				visibleRowCount="7"
+				paste="onPaste"
+				ariaLabelledBy="title"
+				cellClick="onClickShowMaterial">
+				<extension>
+					<m:OverflowToolbar style="Clear">
+						<m:Title id="title" text="Materials"/>
+						<m:Button
+							press="onPressShowStudentFullName"
+							icon="sap-icon://show"
+							text="Student's Fullname"
+							type="Emphasized"/>
+					</m:OverflowToolbar>
+				</extension>
+				<columns>
+					<Column width="11rem">
+						<m:Label text="Material" />
+						<template>
+							<m:Text text="{MaterialText}" wrapping="false" />
+						</template>
+					</Column>
+					<Column width="11rem">
+						<m:Label text="Material ID" />
+						<template>
+							<m:Text text="{MaterialID}" wrapping="false" />
+						</template>
+					</Column>
+					<Column width="11rem">
+						<m:Label text="Description" />
+						<template>
+							<m:Input value="{MaterialDescription}"/>
+						</template>
+					</Column>
+					<Column width="6rem" hAlign="End">
+						<m:Label text="Created By" />
+						<template>
+							<m:Label text="{CreatedByFullName}" />
+						</template>
+					</Column>
+					<Column width="9rem">
+						<m:Label text="Modified By"/>
+						<template>
+							<m:Label text="{ModifiedByFullName}"/>
+						</template>
+					</Column>
+					<Column width="12rem">
+						<m:Label text="Group" />
+						<template>
+							<m:ComboBox value="{GroupText}" 
+										items="{
+										path: '/zjblessons_base_Groups',
+										sorter: { 
+											path: 'GroupText',
+											descending: true 
+										},
+										filters: [
+											{
+												path: 'GroupText',
+												operator: 'NE',
+												value1: null
+											}
+										]
+									}">
+								<c:Item text="{GroupText}"/>
+							</m:ComboBox>
+						</template>
+					</Column>
+					<Column width="12rem">
+						<m:Label text="SubGroup" />
+						<template>
+							<m:ComboBox value="{SubGroupText}" 
+										items="{
+										path: '/zjblessons_base_SubGroups',
+										sorter: { 
+											path: 'SubGroupText',
+											descending: true 
+										},
+										filters: [
+											{
+												path: 'SubGroupText',
+												operator: 'NE',
+												value1: null
+											}
+										]
+									}">
+								<c:Item text="{SubGroupText}"/>
+							</m:ComboBox>
+						</template>
+					</Column>
+				</columns>
+			</Table>
+		</m:content>
+	</m:Page>
 </mvc:View>

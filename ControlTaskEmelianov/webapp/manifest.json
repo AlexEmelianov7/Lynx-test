@@ -68,7 +68,10 @@
 			},
 			"": {
 				"dataSource": "mainService",
-				"preload": true
+				"preload": true,
+				"settings": {
+					"defaultBindingMode": "TwoWay"
+				}
 			}
 		},
 		"routing": {
@@ -94,7 +97,7 @@
 					]
 				},
 				{
-					"pattern": "zjblessons_base_Materials/{objectId}",
+					"pattern": "Material/{objectId}",
 					"name": "object",
 					"target": [
 						"object"

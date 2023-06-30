@@ -24,9 +24,46 @@
 			/>
 		</semantic:headerContent>
 
-		<semantic:sendEmailAction>
-			<semantic:SendEmailAction id="shareEmail" press="onShareEmailPress"/>
-		</semantic:sendEmailAction>
+		<semantic:titleCustomTextActions>
+			<Button
+				visible="{objectView>/editMode}"
+			 	press="onPressSaveMaterial"
+				icon="{i18n>iSave}"
+				text="{i18n>btnSave}"/>
+			<Button
+				visible="{objectView>/editMode}"
+			 	press="onPressCancelEditMaterial"
+				icon="{i18n>iCancel}"
+				text="{i18n>btnCancel}"/>
+			<Button
+				visible="{= !${objectView>/editMode}}"
+			 	press="onPressEditMaterial"
+				icon="{i18n>iEdit}"
+				text="{i18n>btnEdit}"/>
+		</semantic:titleCustomTextActions>
+
+		<semantic:content>
+			<IconTabBar
+				id="iconTabBar" 
+				headerMode="Inline" 
+				select="onSelectIconTabBar">
+				<items>
+					<IconTabFilter
+						text="Panels"
+						key="panels"
+						icon="{i18n>iObjectList}">
+					</IconTabFilter>
+					<IconTabFilter
+						id="formIconTabFilter"
+						text="Form"
+						key="form"
+						icon="sap-icon://form"
+						enabled="{= !${objectView>/editMode} || ${objectView>/selectedKeyITB} === 'form'}">
+						
+					</IconTabFilter>
+				</items>
+			</IconTabBar>
+		</semantic:content>		
 
 
 	</semantic:SemanticPage>

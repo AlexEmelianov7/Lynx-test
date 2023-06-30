@@ -3,12 +3,14 @@ sap.ui.define([
 		"zjblessons/ControlTaskEmelianov/controller/BaseController",
 		"sap/ui/model/json/JSONModel",
 		"sap/ui/core/routing/History",
-		"zjblessons/ControlTaskEmelianov/model/formatter"
+		"zjblessons/ControlTaskEmelianov/model/formatter",
+		"sap/ui/core/Fragment"
 	], function (
 		BaseController,
 		JSONModel,
 		History,
-		formatter
+		formatter,
+		Fragment
 	) {
 		"use strict";
 
@@ -31,7 +33,9 @@ sap.ui.define([
 				var iOriginalBusyDelay,
 					oViewModel = new JSONModel({
 						busy : true,
-						delay : 0
+						delay : 0,
+						editMode: false,
+						selectedKeyITB: "panels"
 					});
 
 				this.getRouter().getRoute("object").attachPatternMatched(this._onObjectMatched, this);
@@ -78,13 +82,14 @@ sap.ui.define([
 			 * @private
 			 */
 			_onObjectMatched : function (oEvent) {
-				var sObjectId =  oEvent.getParameter("arguments").objectId;
+				const sObjectId =  oEvent.getParameter("arguments").objectId;
 				this.getModel().metadataLoaded().then( function() {
 					var sObjectPath = this.getModel().createKey("zjblessons_base_Materials", {
 						MaterialID :  sObjectId
 					});
 					this._bindView("/" + sObjectPath);
 				}.bind(this));
+				new sap.m.MessageToast.show(sObjectId)
 			},
 
 			/**
@@ -139,7 +144,92 @@ sap.ui.define([
 				oResourceBundle.getText("shareSendEmailObjectSubject", [sObjectId]));
 				oViewModel.setProperty("/shareSendEmailMessage",
 				oResourceBundle.getText("shareSendEmailObjectMessage", [sObjectName, sObjectId, location.href]));
-			}
+			},
+
+			_setEditMode: function (bMode) {
+				this.getModel("objectView").setProperty("/editMode", bMode);
+				const sSelectedKey = this.getModel("objectView").getProperty("/selectedKeyITB");
+
+				if (sSelectedKey === "form") {
+					this._addFormContent(bMode ? "Edit" : "View"); 
+				}
+			},
+
+			_addFormContent: function(sMode) {
+				if (!this[`_pForm${sMode}`]) {
+					this[`_pForm${sMode}`] = Fragment.load({
+						id: this.getView().getId(),
+						name: "zjblessons.ControlTaskEmelianov.view.fragment.Form" + sMode,
+						controller: this,
+					}).then(oData => {
+						this.getView().addDependent(oData);
+						return oData;
+					});
+				}
+
+				this[`_pForm${sMode}`].then(oData => {
+					const oIconTabFilter = this.byId("formIconTabFilter");
+
+					oIconTabFilter.removeAllContent();
+					oIconTabFilter.insertContent(oData, 0);
+				})
+			},
+
+			_getPanelsTemplate: function () {
+				return new Promise((resolve, reject) => {
+					if (!this._pPanelsTemplate) {
+						this._pPanelsTemplate = Fragment.load({
+							id: this.getView().getId(),
+							name: "zjblessons.ControlTaskEmelianov.view.fragment.GroupPanel",
+							controller: this
+						}).then(oTemplate => oTemplate);
+					}
+					this._pPanelsTemplate.then(oTemplate => {
+						resolve(oTemplate);
+					}).catch(oError => {
+						MessageBox.error(oError.toString());
+						reject();
+					})
+				})	
+			},
+
+			_bindGroupPaneltemplate: function () {
+				this._getPanelsTemplate().then(oTemplate => {
+					this.byId("groupPanel").bindAggregation("content", {
+						path: "/zjblessons_base_Groups",
+						template: oTemplate,
+						sorter: new sap.ui.model.Sorter("GroupText", false),
+						filters: new sap.ui.model.Filter("GroupText", sap.ui.model.FilterOperator.NE, null)
+					})
+				})
+			},
+
+			onSelectIconTabBar: function (oEvent) {
+				const sSelectedKey = oEvent.getSource().getSelectedKey();
+				this.getModel("objectView").setProperty("/selectedKeyITB", sSelectedKey);
+
+				if (sSelectedKey !== "form") {
+					this._bindPanelstemplate();
+				};
+
+				this._addFormContent("View");
+			},
+
+			onPressEditMaterial: function () {
+				this._setEditMode(true);
+			},
+
+			onPressCancelEditMaterial: function () {
+				this.getModel().resetChanges();		
+				this._setEditMode(false);
+			},
+
+			onPressSaveMaterial: function () {
+				if (this.getModel().hasPendingChanges()) {
+					this.getModel().submitChanges();
+					this._setEditMode(false);
+				}
+			},
 
 		});
 

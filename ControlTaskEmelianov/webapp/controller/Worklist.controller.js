@@ -4,32 +4,22 @@ sap.ui.define([
 		"sap/ui/model/json/JSONModel",
 		"zjblessons/ControlTaskEmelianov/model/formatter",
 		"sap/ui/model/Filter",
-		"sap/ui/model/FilterOperator"
-	], function (BaseController, JSONModel, formatter, Filter, FilterOperator) {
+		"sap/ui/model/FilterOperator",
+		"sap/m/MessageBox"
+	], function (BaseController, JSONModel, formatter, Filter, FilterOperator, MessageBox) {
 		"use strict";
 
 		return BaseController.extend("zjblessons.ControlTaskEmelianov.controller.Worklist", {
 
 			formatter: formatter,
 
-			/* =========================================================== */
-			/* lifecycle methods                                           */
-			/* =========================================================== */
-
-			/**
-			 * Called when the worklist controller is instantiated.
-			 * @public
-			 */
 			onInit : function () {
 				var oViewModel,
 					iOriginalBusyDelay,
 					oTable = this.byId("table");
 
-				// Put down worklist table's original value for busy indicator delay,
-				// so it can be restored later on. Busy handling on the table is
-				// taken care of by the table itself.
 				iOriginalBusyDelay = oTable.getBusyIndicatorDelay();
-				// keeps the search state
+			
 				this._aTableSearchState = [];
 
 				// Model used to manipulate control states
@@ -43,11 +33,7 @@ sap.ui.define([
 				});
 				this.setModel(oViewModel, "worklistView");
 
-				// Make sure, busy indication is showing immediately so there is no
-				// break after the busy indication for loading the view's meta data is
-				// ended (see promise 'oWhenMetadataIsLoaded' in AppController)
 				oTable.attachEventOnce("updateFinished", function(){
-					// Restore original busy indicator delay for worklist's table
 					oViewModel.setProperty("/tableBusyDelay", iOriginalBusyDelay);
 				});
 			},
@@ -141,7 +127,7 @@ sap.ui.define([
 			 */
 			_showObject : function (oItem) {
 				this.getRouter().navTo("object", {
-					objectId: oItem.getBindingContext().getProperty("MaterialID")
+					objectId: oItem.getParameters().rowBindingContext.getProperty("MaterialID")               
 				});
 			},
 
@@ -158,6 +144,19 @@ sap.ui.define([
 				if (aTableSearchState.length !== 0) {
 					oViewModel.setProperty("/tableNoDataText", this.getResourceBundle().getText("worklistNoDataWithSearchText"));
 				}
+			},
+
+			onPressShowStudentFullName: function () {
+				new MessageBox.show("Alexander Emelianov", {
+					title: "Studen's Fullname",
+					actions: sap.m.MessageBox.Action.OK,
+					emphasizedAction: sap.m.MessageBox.Action.OK,
+					initialFocus: null
+				})
+			},
+
+			onClickShowMaterial: function (oEvent) {
+				this._showObject(oEvent)
 			}
 
 		});
